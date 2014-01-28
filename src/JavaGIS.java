@@ -1,3 +1,7 @@
+import geoexplorer.gui.GeoMainFrame;
+import geoexplorer.gui.GraphicalPrimitive;
+import geoexplorer.gui.MapPanel;
+
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -8,6 +12,8 @@ import database.Utils;
 public class JavaGIS {
 	public static void main(String[] args) {
 		if (args.length == 0) {
+			
+			// Fonction de base
 			java.sql.Connection conn = Utils.getConnection();
 			PreparedStatement stmt;
 
@@ -29,6 +35,14 @@ public class JavaGIS {
 				Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null,
 						e);
 			}
+			
+			// Graphique
+			MapPanel mp = new MapPanel(5.75, 45.15, 0.2);
+			geoexplorer.gui.Point point = new geoexplorer.gui.Point(5.73644115, 45.18644215);
+			point.setShape(point.CROSS);
+			mp.addPrimitive(point);
+			new GeoMainFrame("MapPanel", mp);		
+			
 		} else {
 			java.sql.Connection conn = Utils.getConnection();
 			PreparedStatement stmt;

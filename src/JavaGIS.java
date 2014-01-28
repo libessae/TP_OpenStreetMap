@@ -19,8 +19,7 @@ public class JavaGIS {
 				while (res.next()) {
 					System.out.println("longitude centroid = " + res.getDouble(1)
 							+ "; latitude centroid = " + res.getDouble(2)
-							+ "; bbox = "
-							+ ((PGgeometry) res.getObject(3)).getGeometry());
+							+ "; bbox = " + ((PGgeometry) res.getObject(3)).getGeometry());
 				}
 
 				res.close();
@@ -36,11 +35,13 @@ public class JavaGIS {
 
 			try {
 				stmt = conn
-						.prepareStatement("SELECT tags->'name' FROM ways WHERE tags->'name' LIKE ?");
+						.prepareStatement("SELECT tags->'name', ST_X(geom), ST_Y(geom) FROM nodes WHERE tags->'name' LIKE ?");
 				stmt.setString(1, args[0]);
 				ResultSet res = stmt.executeQuery();
 				while (res.next()) {
 					System.out.println("nom = " + res.getString(1));
+					System.out.println("longitude = " + res.getDouble(2));
+					System.out.println("latitude = " + res.getDouble(3));
 				}
 
 				res.close();

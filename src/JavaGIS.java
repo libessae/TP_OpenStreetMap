@@ -14,7 +14,7 @@ public class JavaGIS {
 		if (args.length == 0) {
 			
 			// Fonction de base
-			java.sql.Connection conn = Utils.getConnection();
+			/*java.sql.Connection conn = Utils.getConnection();
 			PreparedStatement stmt;
 
 			try {
@@ -34,13 +34,45 @@ public class JavaGIS {
 			} catch (SQLException e) {
 				Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null,
 						e);
-			}
+			}*/
 			
 			// Graphique
-			MapPanel mp = new MapPanel(5.75, 45.15, 0.2);
-			geoexplorer.gui.Point point = new geoexplorer.gui.Point(5.73644115, 45.18644215);
+			
+			MapPanel mp = new MapPanel(916074.4, 6453841.3, 15000);
+			
+			java.sql.Connection conn = Utils.getConnection();
+			PreparedStatement stmt;
+
+			try {
+				stmt = conn
+						.prepareStatement("SELECT ST_Transform(linestring, 2154) FROM ways WHERE tags->'highway' LIKE '%' AND ST_Intersects(linestring, ST_Setsrid(ST_GeomFromText('Polygon((5.8 45.1, 5.8 45.2, 5.7 45.2, 5.7 45.1, 5.8 45.1))'),4326))");
+
+				ResultSet res = stmt.executeQuery();
+				while (res.next()) {
+					geoexplorer.gui.LineString linestring = new geoexplorer.gui.LineString();
+					System.out.println("linestring = " + ((PGgeometry) res.getObject(1)).getGeometry());
+					PGgeometry geom = (PGgeometry)res.getObject(1);
+					LineString ls = (LineString)geom.getGeometry();
+					for( int p = 0; p < ls.numPoints(); p++ )
+					{
+						Point pt = ls.getPoint(p);
+						linestring.addPoint(new geoexplorer.gui.Point(pt.x, pt.y));
+					}
+					mp.addPrimitive(linestring);
+
+
+				}
+				res.close();
+				Utils.closeConnection();
+
+			} catch (SQLException e) {
+				Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null,
+						e);
+			}
+			
+			/*geoexplorer.gui.Point point = new geoexplorer.gui.Point(5.73644115, 45.18644215);
 			point.setShape(point.CROSS);
-			mp.addPrimitive(point);
+			mp.addPrimitive(point);*/
 			new GeoMainFrame("MapPanel", mp);		
 			
 		} else {
